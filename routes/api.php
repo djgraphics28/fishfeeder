@@ -8,6 +8,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::post('/insert-temp', [TemperatureController::class,'store'])
-    ->name('insert-temp')
-    ->middleware('scheme:http');
+Route::post('/insert-temp', [TemperatureController::class,'store'])->name('insert-temp');
