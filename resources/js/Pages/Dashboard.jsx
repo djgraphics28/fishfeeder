@@ -6,26 +6,16 @@ import Pusher from "pusher-js";
 
 export default function Dashboard({ fishponds, tempHistories }) {
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [temperatureHistory, setTemperatureHistory] = useState([]);
+    const [temperatureHistory, setTemperatureHistory] = useState(tempHistories);
     const [currentPage, setCurrentPage] = useState(0);
     const recordsPerPage = 10;
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
 
     useEffect(() => {
-        // Populate initial temperature history from props
-        setTemperatureHistory(tempHistories);
-    }, [tempHistories]);
-    
-
-    useEffect(() => {
-        // Set up Pusher
         const pusher = new Pusher("98a8cae103a1518a338a", {
             cluster: "ap1",
             encrypted: true,
@@ -33,33 +23,39 @@ export default function Dashboard({ fishponds, tempHistories }) {
 
         const channel = pusher.subscribe("temperature-updates");
 
-        channel.bind("temperature.updated", function (data) {
-            // Update the state when new data is received
-            setTemperatureHistory(data.temperatureHistory);
+        channel.bind("temperature.updated", (data) => {
+            setTemperatureHistory((prevHistory) => {
+                const newRecords = data.temperatureHistory.filter(
+                    (newRecord) =>
+                        !prevHistory.some(
+                            (record) => record.id === newRecord.id
+                        )
+                );
+                return [...prevHistory, ...newRecords];
+            });
         });
 
         return () => {
+            channel.unbind("temperature.updated");
             pusher.unsubscribe("temperature-updates");
+            pusher.disconnect();
         };
     }, []);
 
-    const formatDate = (date) => {
-        const options = {
+    const formatDate = (date) =>
+        new Date(date).toLocaleDateString(undefined, {
             weekday: "long",
             year: "numeric",
             month: "long",
             day: "numeric",
-        };
-        return new Date(date).toLocaleDateString(undefined, options);
-    };
+        });
 
-    const formatTime = (date) => {
-        return new Date(date).toLocaleTimeString(undefined, {
+    const formatTime = (date) =>
+        new Date(date).toLocaleTimeString(undefined, {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
         });
-    };
 
     const handleFilter = (startDate, endDate) => {
         const filtered = tempHistories.filter((record) => {
@@ -70,7 +66,7 @@ export default function Dashboard({ fishponds, tempHistories }) {
             );
         });
         setTemperatureHistory(filtered);
-        setCurrentPage(0); // Reset to first page after filtering
+        setCurrentPage(0);
     };
 
     return (
