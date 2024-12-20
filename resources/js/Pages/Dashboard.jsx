@@ -202,16 +202,16 @@ export default function Dashboard({ fishponds, tempHistories }) {
                                         .map((record) => (
                                             <tr key={record.id}>
                                                 <td className="px-6 py-4">
-                                                    {record.fishpond}
+                                                    {record.fishpond.name}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     {record.temperature}&#176;C
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    {formatDate(record.date)}
+                                                    {formatDate(record.created_at)}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    {formatTime(record.date)}
+                                                    {formatTime(record.created_at)}
                                                 </td>
                                             </tr>
                                         ))}

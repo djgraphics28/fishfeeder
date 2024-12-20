@@ -8,7 +8,7 @@ class Fishpond extends Model
 {
     protected $fillable = [
         'name',
-        'location',
+        'location', 
         'device_id',
         'is_active'
     ];
@@ -21,5 +21,10 @@ class Fishpond extends Model
     public function temp_histories() 
     {
         return $this->hasMany(TempHistory::class);
+    }
+
+    public function latest_temp_history()
+    {
+        return $this->hasOne(TempHistory::class)->latest();
     }
 }
