@@ -21,6 +21,7 @@
         "vite": "^6.0"
     },
     "dependencies": {
+        "pusher-js": "^8.4.0-rc2",
         "react-chartjs-2": "^5.2.0",
         "react-icons": "^5.4.0",
         "react-toastify": "^11.0.2"

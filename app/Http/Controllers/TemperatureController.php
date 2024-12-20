@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TempHistory;
 use Illuminate\Http\Request;
+use App\Events\TemperatureUpdated;
 
 class TemperatureController extends Controller
 {
@@ -15,7 +16,8 @@ class TemperatureController extends Controller
         TempHistory::create(['fishpond_id' => 1,'temperature'=> $temp1]);
         TempHistory::create(['fishpond_id' => 2,'temperature'=> $temp2]);
 
-        // Save the temperature data to the database or perform any other necessary actions
+        // Broadcast the temperature update
+        event(new TemperatureUpdated($temp1, $temp2));
 
         return response()->json(['message' => 'Temperature data saved successfully']);
     }
