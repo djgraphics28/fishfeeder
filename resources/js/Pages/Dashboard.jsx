@@ -6,7 +6,7 @@ import Pusher from "pusher-js";
 
 export default function Dashboard({ fishponds, tempHistories }) {
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [temperatureHistory, setTemperatureHistory] = useState([]);
+    const [temperatureHistory, setTemperatureHistory] = useState(tempHistories);
     const [currentPage, setCurrentPage] = useState(0);
     const recordsPerPage = 10;
 
@@ -19,12 +19,6 @@ export default function Dashboard({ fishponds, tempHistories }) {
     }, []);
 
     useEffect(() => {
-        // Populate initial temperature history from props
-        setTemperatureHistory(tempHistories);
-    }, [tempHistories]);
-
-    useEffect(() => {
-        // Set up Pusher
         const pusher = new Pusher("98a8cae103a1518a338a", {
             cluster: "ap1",
             encrypted: true,
@@ -33,27 +27,22 @@ export default function Dashboard({ fishponds, tempHistories }) {
         const channel = pusher.subscribe("temperature-updates");
 
         channel.bind("temperature.updated", function (data) {
-            // Update the state when new data is received
-            setTemperatureHistory(data.temperatureHistory);
-        });
+            // Assuming data.temperatureHistory is the updated temperature list
+            setTemperatureHistory((prevHistory) => {
+                // Merge or replace logic
+                const updatedHistory = data.temperatureHistory.map(
+                    (newRecord) => {
+                        const existingRecord = prevHistory.find(
+                            (record) => record.id === newRecord.id
+                        );
+                        return existingRecord
+                            ? { ...existingRecord, ...newRecord }
+                            : newRecord;
+                    }
+                );
 
-        return () => {
-            pusher.unsubscribe("temperature-updates");
-        };
-    }, []);
-
-    useEffect(() => {
-        // Set up Pusher
-        const pusher = new Pusher("98a8cae103a1518a338a", {
-            cluster: "ap1",
-            encrypted: true,
-        });
-
-        const channel = pusher.subscribe("temperature-updates");
-
-        channel.bind("temperature.updated", function (data) {
-            // Update the state when new data is received
-            setTemperatureHistory(data.temperatureHistory);
+                return [...updatedHistory];
+            });
         });
 
         return () => {
@@ -88,7 +77,7 @@ export default function Dashboard({ fishponds, tempHistories }) {
             );
         });
         setTemperatureHistory(filtered);
-        setCurrentPage(0); // Reset to first page after filtering
+        setCurrentPage(0);
     };
 
     return (
