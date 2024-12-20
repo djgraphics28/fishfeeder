@@ -17,4 +17,9 @@ class Fishpond extends Model
     {
         return $this->belongsTo(Device::class);
     }
+
+    public function temp_histories() 
+    {
+        return $this->hasMany(TempHistory::class);
+    }
 }

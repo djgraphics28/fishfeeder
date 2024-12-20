@@ -3,22 +3,11 @@ import { Head } from "@inertiajs/react";
 import { FaTemperatureHigh } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+export default function Dashboard({ fishponds, tempHistories }) {
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [temperatureHistory, setTemperatureHistory] = useState([
-        {
-            id: 1,
-            fishpond: "Fishpond 1",
-            temperature: "28°C",
-            date: new Date(),
-        },
-        {
-            id: 2,
-            fishpond: "Fishpond 2",
-            temperature: "26°C",
-            date: new Date(),
-        },
-    ]);
+    const [temperatureHistory, setTemperatureHistory] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const recordsPerPage = 10;
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -28,6 +17,11 @@ export default function Dashboard() {
         return () => clearInterval(timer);
     }, []);
 
+    useEffect(() => {
+        // Populate initial temperature history from props
+        setTemperatureHistory(tempHistories);
+    }, [tempHistories]);
+
     const formatDate = (date) => {
         const options = {
             weekday: "long",
@@ -35,15 +29,27 @@ export default function Dashboard() {
             month: "long",
             day: "numeric",
         };
-        return date.toLocaleDateString(undefined, options);
+        return new Date(date).toLocaleDateString(undefined, options);
     };
 
     const formatTime = (date) => {
-        return date.toLocaleTimeString(undefined, {
+        return new Date(date).toLocaleTimeString(undefined, {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
         });
+    };
+
+    const handleFilter = (startDate, endDate) => {
+        const filtered = tempHistories.filter((record) => {
+            const recordDate = new Date(record.date);
+            return (
+                (!startDate || recordDate >= new Date(startDate)) &&
+                (!endDate || recordDate <= new Date(endDate))
+            );
+        });
+        setTemperatureHistory(filtered);
+        setCurrentPage(0); // Reset to first page after filtering
     };
 
     return (
@@ -56,96 +62,202 @@ export default function Dashboard() {
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="flex justify-center space-x-6">
-                        {/* Card 1 */}
-                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 text-center relative">
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                                Water Fishpond 1
-                            </h3>
-                            <p className="text-4xl font-extrabold text-blue-600 dark:text-blue-400 mt-4">
-                                28°C
-                            </p>
-                            <FaTemperatureHigh className="absolute bottom-4 right-4 text-blue-600 dark:text-blue-400 text-2xl" />
-                        </div>
-
-                        {/* Card 2 */}
-                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 text-center relative">
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                                Water Fishpond 2
-                            </h3>
-                            <p className="text-4xl font-extrabold text-blue-600 dark:text-blue-400 mt-4">
-                                26°C
-                            </p>
-                            <FaTemperatureHigh className="absolute bottom-4 right-4 text-blue-600 dark:text-blue-400 text-2xl" />
-                        </div>
-                    </div>
-
+            <div className="py-0">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     {/* Date Time Card */}
-                    <div className="mt-10 flex justify-center">
-                        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 text-center w-full max-w-3xl">
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                Current Date & Time
-                            </h3>
-                            <p className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 mt-4">
+                    <div className="mt-10 flex justify-center px-4 mb-5">
+                        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 text-center w-full">
+                            <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                                 {formatDate(currentTime)}{" "}
                                 {formatTime(currentTime)}
                             </p>
-
-                            <div className="flex w-full justify-between mt-4">
-                                <button className="flex-1 mx-2 rounded-lg bg-indigo-600 px-3 py-1 text-sm text-white font-semibold shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2">
-                                    Feed Now
-                                </button>
-                                <button className="flex-1 mx-2 rounded-lg bg-green-600 px-3 py-1 text-sm text-white font-semibold shadow-lg transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
-                                    Schedule
-                                </button>
-                            </div>
                         </div>
                     </div>
+                    <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                        {fishponds.map((fishpond) => (
+                            <div
+                                key={fishpond.id}
+                                className="w-full sm:w-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 text-center relative"
+                            >
+                                <FaTemperatureHigh className="absolute top-4 right-4 text-blue-600 dark:text-blue-400 text-xl sm:text-2xl" />
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                    {fishpond.name}
+                                </h3>
+                                <p className="text-sm sm:text-base">
+                                    Location: {fishpond.location}
+                                </p>
+                                <p className="text-2xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 mt-4">
+                                    {fishpond.temperature}&#176;C
+                                </p>
 
-                    {/* Temperature History Table */}
-                    <div className="mt-10">
-                        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-7xl">
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                                <div className="flex flex-col sm:flex-row w-full justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
+                                    <button className="flex-1 rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white font-semibold shadow-lg transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2">
+                                        Feed Now
+                                    </button>
+                                    <button className="flex-1 rounded-lg bg-green-600 px-3 py-2 text-sm text-white font-semibold shadow-lg transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
+                                        Schedule
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Temperature History */}
+                    <div className="mt-10 px-4">
+                        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-7xl overflow-x-auto">
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                                 Fishponds Temperature History
                             </h3>
+                            {/* Filters */}
+                            <div className="mb-4 flex flex-row gap-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                    <label className="mr-2 mb-2 sm:mb-0 text-sm text-gray-600 dark:text-gray-400">
+                                        Sort by:
+                                    </label>
+                                    <select
+                                        className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-md w-full sm:w-48"
+                                        onChange={(e) => {
+                                            const sorted = [
+                                                ...temperatureHistory,
+                                            ].sort((a, b) =>
+                                                e.target.value === "asc"
+                                                    ? a.fishpond.localeCompare(
+                                                          b.fishpond
+                                                      )
+                                                    : b.fishpond.localeCompare(
+                                                          a.fishpond
+                                                      )
+                                            );
+                                            setTemperatureHistory(sorted);
+                                        }}
+                                    >
+                                        {fishponds.map((fishpond) => (
+                                            <option
+                                                key={fishpond.id}
+                                                value={fishpond.name}
+                                            >
+                                                {fishpond.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                    <label className="mr-2 mb-2 sm:mb-0 text-sm text-gray-600 dark:text-gray-400">
+                                        Date Range:
+                                    </label>
+                                    <div className="flex flex-col sm:flex-row w-full gap-2">
+                                        <input
+                                            type="date"
+                                            className="rounded-md border px-3 py-2 w-full"
+                                            onChange={(e) =>
+                                                handleFilter(
+                                                    e.target.value,
+                                                    null
+                                                )
+                                            }
+                                        />
+                                        <span className="hidden sm:block mx-2">
+                                            to
+                                        </span>
+                                        <span className="block sm:hidden text-center text-sm text-gray-600 dark:text-gray-400">
+                                            to
+                                        </span>
+                                        <input
+                                            type="date"
+                                            className="rounded-md border px-3 py-2 w-full"
+                                            onChange={(e) =>
+                                                handleFilter(
+                                                    null,
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>{" "}
+                            {/* Table */}
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase">
                                             Fishpond
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase">
                                             Temperature
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase">
                                             Date
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase">
                                             Time
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {temperatureHistory.map((record) => (
-                                        <tr key={record.id}>
-                                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                                {record.fishpond}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                                {record.temperature}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                                {formatDate(record.date)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                                {formatTime(record.date)}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {temperatureHistory
+                                        .slice(
+                                            currentPage * recordsPerPage,
+                                            (currentPage + 1) * recordsPerPage
+                                        )
+                                        .map((record) => (
+                                            <tr key={record.id}>
+                                                <td className="px-6 py-4">
+                                                    {record.fishpond}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {record.temperature}&#176;C
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {formatDate(record.date)}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {formatTime(record.date)}
+                                                </td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
+                            {/* Pagination */}
+                            <div className="mt-4 flex items-center justify-between">
+                                <button
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.max(0, prev - 1)
+                                        )
+                                    }
+                                    disabled={currentPage === 0}
+                                    className="px-3 py-1 bg-gray-200 rounded"
+                                >
+                                    Previous
+                                </button>
+                                <span>
+                                    Page {currentPage + 1} of{" "}
+                                    {Math.ceil(
+                                        temperatureHistory.length /
+                                            recordsPerPage
+                                    )}
+                                </span>
+                                <button
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.min(
+                                                Math.ceil(
+                                                    temperatureHistory.length /
+                                                        recordsPerPage
+                                                ) - 1,
+                                                prev + 1
+                                            )
+                                        )
+                                    }
+                                    disabled={
+                                        (currentPage + 1) * recordsPerPage >=
+                                        temperatureHistory.length
+                                    }
+                                    className="px-3 py-1 bg-gray-200 rounded"
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
