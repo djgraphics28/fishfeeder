@@ -1,5 +1,3 @@
 <IfModule mod_rewrite.c>
-    RewriteEngine On # Allow access to Vite's assets RewriteCond %{REQUEST_URI}
-    !^/build/ # Redirect all other requests to Laravel RewriteRule ^(.*)$
-    public/$1 [L]
+    RewriteEngine On RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
