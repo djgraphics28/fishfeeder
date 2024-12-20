@@ -2,6 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { FaTemperatureHigh } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import Pusher from "pusher-js";
 
 export default function Dashboard({ fishponds, tempHistories }) {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -21,6 +22,44 @@ export default function Dashboard({ fishponds, tempHistories }) {
         // Populate initial temperature history from props
         setTemperatureHistory(tempHistories);
     }, [tempHistories]);
+
+    useEffect(() => {
+        // Set up Pusher
+        const pusher = new Pusher("PUSHER_APP_KEY", {
+            cluster: "PUSHER_APP_CLUSTER",
+            encrypted: true,
+        });
+
+        const channel = pusher.subscribe("temperature-updates");
+
+        channel.bind("temperature.updated", function (data) {
+            // Update the state when new data is received
+            setTemperatureHistory(data.temperatureHistory);
+        });
+
+        return () => {
+            pusher.unsubscribe("temperature-updates");
+        };
+    }, []);
+    
+    useEffect(() => {
+        // Set up Pusher
+        const pusher = new Pusher("PUSHER_APP_KEY", {
+            cluster: "PUSHER_APP_CLUSTER",
+            encrypted: true,
+        });
+
+        const channel = pusher.subscribe("temperature-updates");
+
+        channel.bind("temperature.updated", function (data) {
+            // Update the state when new data is received
+            setTemperatureHistory(data.temperatureHistory);
+        });
+
+        return () => {
+            pusher.unsubscribe("temperature-updates");
+        };
+    }, []);
 
     const formatDate = (date) => {
         const options = {
@@ -208,10 +247,14 @@ export default function Dashboard({ fishponds, tempHistories }) {
                                                     {record.temperature}&#176;C
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    {formatDate(record.created_at)}
+                                                    {formatDate(
+                                                        record.created_at
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    {formatTime(record.created_at)}
+                                                    {formatTime(
+                                                        record.created_at
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

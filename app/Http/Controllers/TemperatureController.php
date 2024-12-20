@@ -13,11 +13,12 @@ class TemperatureController extends Controller
         $temp1 = $request->input('temp1');
         $temp2 = $request->input('temp2');
 
-        TempHistory::create(['fishpond_id' => 1,'temperature'=> $temp1]);
-        TempHistory::create(['fishpond_id' => 2,'temperature'=> $temp2]);
+        TempHistory::create(['fishpond_id' => 1, 'temperature'=> $temp1]);
+        TempHistory::create(['fishpond_id' => 2, 'temperature'=> $temp2]);
 
-        // Broadcast the temperature update
-        event(new TemperatureUpdated($temp1, $temp2));
+        // Dispatch event to update real-time temperature history
+        $temperatureHistory = TempHistory::with('fishpond')->latest()->get();
+        event(new TemperatureUpdated($temperatureHistory));
 
         return response()->json(['message' => 'Temperature data saved successfully']);
     }

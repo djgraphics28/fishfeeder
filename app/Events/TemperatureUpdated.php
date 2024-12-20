@@ -14,17 +14,20 @@ class TemperatureUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $temp1;
-    public $temp2;
+    public $temperatureHistory;
 
-    public function __construct($temp1, $temp2)
+    public function __construct($temperatureHistory)
     {
-        $this->temp1 = $temp1;
-        $this->temp2 = $temp2;
+        $this->temperatureHistory = $temperatureHistory;
     }
 
     public function broadcastOn()
     {
-        return new Channel('temperature-channel');
+        return new Channel('temperature-updates');
+    }
+
+    public function broadcastAs()
+    {
+        return 'temperature.updated';
     }
 }
