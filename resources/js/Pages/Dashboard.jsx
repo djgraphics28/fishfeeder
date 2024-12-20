@@ -25,8 +25,8 @@ export default function Dashboard({ fishponds, tempHistories }) {
 
     useEffect(() => {
         // Set up Pusher
-        const pusher = new Pusher("PUSHER_APP_KEY", {
-            cluster: "PUSHER_APP_CLUSTER",
+        const pusher = new Pusher("98a8cae103a1518a338a", {
+            cluster: "ap1",
             encrypted: true,
         });
 
