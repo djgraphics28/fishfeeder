@@ -15,7 +15,7 @@ class DashboardController extends Controller
             $query->latest()->limit(1);
         }])->get();
 
-        $tempHistories = TempHistory::with('fispond')->latest()->get();
+        $tempHistories = TempHistory::with('fishpond')->latest()->get();
 
         return Inertia::render('Dashboard', [
             'fishponds' => $fishponds,
