@@ -6,7 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FishpondController;
 
 Route::get('/', function () {
-    return route('login');
+    return redirect()->route('login');
 });
 
 Auth::routes([
