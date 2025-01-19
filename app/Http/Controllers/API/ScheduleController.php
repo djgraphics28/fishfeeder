@@ -23,7 +23,7 @@ class ScheduleController extends Controller
         $deviceCode = $request->input('deviceCode');
         $fishpondId = $request->input('fishpond_id');
 
-        $device = Device::find( $deviceCode);
+        $device = Device::where( 'code',$deviceCode)->first();
         if (!$device) {
             return response()->json([
                 'status' => false,
