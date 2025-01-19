@@ -23,7 +23,7 @@ class ScheduleController extends Controller
         $deviceCode = $request->input('deviceCode');
         $fishpondId = $request->input('fishpond_id');
 
-        $device = Device::where( 'code',$deviceCode)->first();
+        $device = Device::where('code', $deviceCode)->first();
         if (!$device) {
             return response()->json([
                 'status' => false,
@@ -32,7 +32,7 @@ class ScheduleController extends Controller
         }
 
         // Get the current time
-        $currentTime = now()->format('H:i:s'); // Ensure it matches the format in the database
+        $currentTime = now()->format('H:i'); // Get the hour and minute
 
         // Check for a schedule that matches the current time and fishpond ID
         $schedule = Schedule::where('time', $currentTime)
