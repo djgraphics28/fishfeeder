@@ -34,13 +34,15 @@ class FishpondController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:50',
-            'fishpondImage' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'fishpondImage' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'high_temp' => 'required|numeric',
         ]);
 
         $fishpond = Fishpond::create([
             'name' => $request->name,
             'description' => $request->description,
-            'device_id' => $request->device
+            'device_id' => $request->device,
+            'high_temp' => $request->high_temp,
         ]);
 
         if ($request->hasFile('fishpondImage')) {
@@ -81,16 +83,19 @@ class FishpondController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:50|unique:fishponds,name,' . $id,
-            'fishpondImage' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'fishpondImage' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'high_temp' => 'required|numeric',
         ]);
 
         $fishpond = Fishpond::findOrFail($id);
         $fishpond->update([
             'name' => $request->name,
             'description' => $request->description,
-            'device_id' => $request->device
+            'device_id' => $request->device,
+            'high_temp' => $request->high_temp,
         ]);
 
         // Clear the media collection and handle the image upload if a new image is provided

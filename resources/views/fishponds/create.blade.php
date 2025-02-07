@@ -117,6 +117,17 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="name">High Temperature</label>
+                                    <input type="number" name="high_temp" id="high_temp"
+                                        class="form-control @error('high_temp') is-invalid @enderror">
+                                    @error('high_temp')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
                                     <label for="fishpondImage">Fishpond Image</label>
                                     <input type="file" name="fishpondImage" id="fishpondImage"
                                         class="form-control @error('fishpondImage') is-invalid @enderror" accept="image/*"

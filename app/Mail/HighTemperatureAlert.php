@@ -9,16 +9,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class HighTemperatureAlert extends Mailable
+class HighTemperatureAlert extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $fishpond;
+    public $temperature;
+
+    public function __construct($fishpond, $temperature)
     {
-        //
+        $this->fishpond = $fishpond;
+        $this->temperature = $temperature;
     }
 
     /**
@@ -27,7 +28,7 @@ class HighTemperatureAlert extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'High Temperature Alert',
+            subject: 'High Temperature Alert'
         );
     }
 
@@ -37,7 +38,7 @@ class HighTemperatureAlert extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.high_temperature_alert',
+            markdown: 'emails.high_temperature_alert'
         );
     }
 

@@ -33,6 +33,7 @@
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
+                                <th class="text-center">High Temperature</th>
                                 <th>Description</th>
                                 <th>Device</th>
                                 <th width="15%">Actions</th>
@@ -55,6 +56,7 @@
                                         @endif
                                     </td>
                                     <td>{{ $fishpond->name }}</td>
+                                    <td class="text-center">{{ $fishpond->high_temp }}°C</td>
                                     <td>{!! strip_tags($fishpond->description) !!}</td>
                                     <td>
                                         @if ($fishpond->device->getFirstMediaUrl('device-image'))

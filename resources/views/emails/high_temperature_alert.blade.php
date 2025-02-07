@@ -1,12 +1,14 @@
 @component('mail::message')
-# High Temperature Alert!
+# High Temperature Alert
 
-A high temperature has been detected at **{{ $location }}**.
+Dear Admin,
+
+A high temperature has been detected in **{{ $fishpond->name }}**.
 
 The current temperature is **{{ $temperature }}°C**, which exceeds the safe limit.
 
-Please take appropriate action immediately to ensure safety.
+Please take immediate action to ensure the safety of the fish.
 
-Thanks,  
-{{ config('app.name') }}
+Thank you,
+**{{ config('app.name') }}**
 @endcomponent

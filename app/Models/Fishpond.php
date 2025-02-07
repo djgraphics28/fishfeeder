@@ -14,7 +14,7 @@ class Fishpond extends Model implements HasMedia
     use LogsActivity;
     protected $guarded = [];
 
-    protected $fillable = ['name', 'description', 'is_feeding', 'device_id'];
+    protected $fillable = ['name', 'description', 'is_feeding', 'device_id', 'high_temp'];
 
     public function device()
     {
