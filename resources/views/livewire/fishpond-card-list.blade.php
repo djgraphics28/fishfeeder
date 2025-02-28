@@ -26,6 +26,8 @@
                                     <i class="fas fa-thermometer-half float-right"></i>
                                 </h4>
                                 <p>{!! nl2br(string: strip_tags($fishpond->description)) !!}</p>
+                                <p>Updated On:
+                                    {{ $fishpond->latestTemperature?->created_at?->diffForHumans() ?? 'Never' }}</p>
                             </div>
                         </div>
 
