@@ -33,12 +33,15 @@ class ScheduleController extends Controller
 
         // Get the current time
         $currentTime = now()->format('H:i'); // Get the hour and minute
+        $plusFiveMinutes = now()->addMinutes(5)->format('H:i'); // Get time plus 5 minutes
 
-        // Check for a schedule that matches the current time and fishpond ID
-        $schedule = Schedule::where('time', $currentTime)
+        // Check for a schedule that matches the current time (or within 5 minutes) and fishpond ID
+        $schedule = Schedule::where(function ($query) use ($currentTime, $plusFiveMinutes) {
+            $query->where('time', '>=', $currentTime)
+                ->where('time', '<=', $plusFiveMinutes);
+        })
             ->where('fishpond_id', $fishpondId)
             ->first();
-
         if ($schedule) {
             return response()->json([
                 'status' => true,
