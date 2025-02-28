@@ -1,6 +1,6 @@
 <div>
-    <div class="row" wire:poll.5s>
-        <div class="card">
+    <div class="row">
+        <div class="card" wire:poll.5s>
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Temperature History</h3>
                 <div class="card-tools">
