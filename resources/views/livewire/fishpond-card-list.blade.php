@@ -1,7 +1,7 @@
 <div>
-    <div class="row {{ count($fishponds) < 3 ? 'justify-content-center' : '' }}" wire:poll.5s>
+    <div class="row {{ count($fishponds) < 3 ? 'justify-content-center' : '' }}">
         @forelse($fishponds as $fishpond)
-            <div class="col-md-4">
+            <div class="col-md-4" wire:poll.5s>
                 <div
                     class="card bg-{{ $fishpond->latestTemperature?->temperature >= 0 && $fishpond->latestTemperature?->temperature <= 36 ? 'success' : 'danger' }}">
                     <div class="card-header">
