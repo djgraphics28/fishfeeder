@@ -92,8 +92,7 @@
                         @forelse($schedules as $schedule)
                             <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                    <strong>{{ $schedule->time }}</strong>
-                                    <p class="mb-0">{{ $schedule->description }}</p>
+                                    <strong>{{ date('h:i A', strtotime($schedule->time)) }}</strong>                                    <p class="mb-0">{{ $schedule->description }}</p>
                                 </div>
                                 <div>
                                     <button wire:click="editSchedule({{ $schedule->id }})"
