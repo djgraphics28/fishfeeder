@@ -29,6 +29,11 @@ class TemperatureHistoryTableList extends Component
         $this->endDate = now()->toDateString();
     }
 
+    public function refreshData()
+    {
+        $this->dispatch('$refresh');
+    }
+
     public function render()
     {
         $query = TempHistory::query();

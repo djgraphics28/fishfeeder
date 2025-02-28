@@ -1,5 +1,5 @@
 <div>
-    <div class="row {{ count($fishponds) < 3 ? 'justify-content-center' : '' }}">
+    <div class="row {{ count($fishponds) < 3 ? 'justify-content-center' : '' }}" wire:poll.5s>
         @forelse($fishponds as $fishpond)
             <div class="col-md-4">
                 <div
@@ -92,7 +92,8 @@
                         @forelse($schedules as $schedule)
                             <div class="schedule-item d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                    <strong>{{ date('h:i A', strtotime($schedule->time)) }}</strong>                                    <p class="mb-0">{{ $schedule->description }}</p>
+                                    <strong>{{ date('h:i A', strtotime($schedule->time)) }}</strong>
+                                    <p class="mb-0">{{ $schedule->description }}</p>
                                 </div>
                                 <div>
                                     <button wire:click="editSchedule({{ $schedule->id }})"
@@ -120,5 +121,11 @@
         window.addEventListener('close-modal', () => {
             $('#scheduleModal').modal('hide');
         });
+    </script>
+
+    <script>
+        setInterval(() => {
+            Livewire.emit('refreshData');
+        }, 5000); // Refresh every 5 seconds
     </script>
 @endpush
